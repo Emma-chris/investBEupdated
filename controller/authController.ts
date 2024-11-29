@@ -5,6 +5,7 @@ import authModel from "../model/authModel";
 import jwt from "jsonwebtoken";
 import env from "dotenv";
 import cloudinary from "../utils/cloudinary";
+import { sendCreateAccountEmail } from "../utils/email";
 env.config();
 
 // AUTH
@@ -16,11 +17,17 @@ export const createUser = async (req: Request, res: Response) => {
     const hashed = await bcrypt.hash(password, salt);
 
     const acc = crypto.randomBytes(4).toString("hex");
+    const verifyToken = crypto.randomBytes(2).toString("hex");
 
     const user = await authModel.create({
       email,
       password: hashed,
       accNumber: acc,
+      verifyToken,
+    });
+
+    sendCreateAccountEmail(user).then(() => {
+      console.log("running");
     });
 
     return res.status(201).json({
@@ -42,17 +49,24 @@ export const logInUser = async (req: Request, res: Response) => {
       const passwordCheck = await bcrypt.compare(password, getUser.password);
 
       if (passwordCheck) {
-        const token: any = jwt.sign(
-          { id: getUser._id },
-          process.env.JWT_SECRET as string,
-          { expiresIn: process.env.JWT_TIME }
-        );
+        if (getUser?.isVerify && getUser?.verifyToken === "") {
+          const token: any = jwt.sign(
+            { id: getUser._id },
+            process.env.JWT_SECRET as string,
+            { expiresIn: process.env.JWT_TIME }
+          );
 
-        return res.status(201).json({
-          message: "Welcome back",
-          data: token,
-          status: 201,
-        });
+          return res.status(201).json({
+            message: "Welcome back",
+            data: token,
+            status: 201,
+          });
+        } else {
+          return res.status(404).json({
+            message: "Your account hasn't been verified",
+            status: 404,
+          });
+        }
       } else {
         return res.status(404).json({
           message: "Error with user password",
@@ -111,6 +125,29 @@ export const changeUserPassword = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       message: "password updated successfully",
+      data: user,
+      status: 201,
+    });
+  } catch (error) {
+    return res.status(404).json({ error: error, status: 404 });
+  }
+};
+
+export const verifyUserAccount = async (req: Request, res: Response) => {
+  try {
+    const { userID } = req.params;
+
+    const user = await authModel.findByIdAndUpdate(
+      userID,
+      {
+        isVerify: true,
+        verifyToken: "",
+      },
+      { new: true }
+    );
+
+    return res.status(201).json({
+      message: "account verify updated successfully",
       data: user,
       status: 201,
     });

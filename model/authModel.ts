@@ -11,6 +11,9 @@ interface iAuth {
   avatarID: string;
   accNumber: string;
 
+  isVerify: boolean;
+  verifyToken: string;
+
   // investments
   wallet: number;
   transactionHistory: any[];
@@ -20,10 +23,19 @@ interface iAuthData extends iAuth, Document {}
 
 const authModel = new Schema<iAuthData>(
   {
+    isVerify: {
+      type: Boolean,
+      default: false,
+    },
     accNumber: {
       type: String,
       unique: true,
     },
+
+    verifyToken: {
+      type: String,
+    },
+
     userName: {
       type: String,
     },
