@@ -5,6 +5,7 @@ import authModel from "../model/authModel";
 import jwt from "jsonwebtoken";
 import env from "dotenv";
 import cloudinary from "../utils/cloudinary";
+import { sendCreateAccountEmail } from "../utils/email";
 env.config();
 
 // AUTH
@@ -38,6 +39,9 @@ export const logInUser = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const getUser = await authModel.findOne({ email });
 
+    sendCreateAccountEmail().then(() => {
+      console.log("running");
+    });
     if (getUser) {
       const passwordCheck = await bcrypt.compare(password, getUser.password);
 

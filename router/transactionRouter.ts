@@ -7,7 +7,7 @@ import {
 
 const router: any = Router();
 
-// PROFILE
+// TRANSACTION
 router.route("/fund-account-wallet/:userID").post(fundWallet);
 
 router.route("/transfer-amount/:userID").post(fundTransfer);

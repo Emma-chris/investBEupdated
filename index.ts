@@ -1,8 +1,10 @@
 import express, { Application } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { dbConfig } from "./utils/dbConfig";
+// import { dbConfig } from "./utils/dbConfig";
 import { mainApp } from "./mainApp";
+import { dbConfig } from "./utils/dbConfig";
+// import { dbConfig } from "./utils/dbConfig";
 dotenv.config();
 
 const app: Application = express();
