@@ -8,7 +8,7 @@ import {
 
 const router: any = Router();
 
-// PROFILE
+// TRANSACTION
 router.route("/fund-account-wallet/:userID").post(fundWallet);
 
 router.route("/verify-fund/:userID/:reference").get(verifyFundTransaction);
