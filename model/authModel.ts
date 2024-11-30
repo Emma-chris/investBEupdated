@@ -51,7 +51,8 @@ const authModel = new Schema<iAuthData>(
     firstName: {
       type: String,
     },
-    lastName: {
+   java -jar bfg.jar --delete-files uploads/email.txt
+stName: {
       type: String,
     },
     avatar: {
